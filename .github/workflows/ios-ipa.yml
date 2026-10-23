@@ -1,0 +1,42 @@
+name: Build iPhone app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate Xcode project
+        working-directory: apps/house-capture
+        run: |
+          brew install xcodegen
+          xcodebuild -version
+          xcodegen generate
+      - name: Build for a physical iPhone without signing
+        working-directory: apps/house-capture
+        run: |
+          xcodebuild -project HouseCapture.xcodeproj -scheme HouseCapture \
+            -configuration Release -sdk iphoneos \
+            -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+      - name: Package unsigned IPA for local sideloading
+        working-directory: apps/house-capture
+        run: |
+          mkdir -p build/ipa/Payload
+          cp -R build/Build/Products/Release-iphoneos/HouseCapture.app build/ipa/Payload/
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' build/ipa/Payload/HouseCapture.app/Info.plist
+          cd build/ipa
+          zip -qr ../3D-Model-Anything-unsigned.ipa Payload
+          unzip -t ../3D-Model-Anything-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iphone-app-unsigned
+          path: apps/house-capture/build/3D-Model-Anything-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14

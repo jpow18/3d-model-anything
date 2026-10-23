@@ -30,6 +30,8 @@ The demo includes the reconstructed office and selected textures. Original scans
 
 ## Capture your own space
 
+**Using Linux or Omarchy?** Follow the [Linux setup guide](docs/linux.md) to build the iPhone app on GitHub and install it from Linux. No local Mac or Xcode is needed. A LiDAR-equipped iPhone or iPad still does the scanning.
+
 See [the iPhone app](apps/house-capture/README.md) for building with Xcode, device requirements, scanning and sharing. Scanning needs a LiDAR-equipped iPhone or iPad. Non-LiDAR devices can import and review scans.
 
 The app is source-available here; an App Store release is a separate distribution step. Do not assume an App Store download is available yet.
